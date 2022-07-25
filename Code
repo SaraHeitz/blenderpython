@@ -1,0 +1,46 @@
+import csv 
+import bpy
+
+
+#---SCENE SETTINGS
+scn = bpy.context.scene
+scn.frame_start = 1
+current_frame = 0
+
+#---DATASET
+with open ('test.csv') as f: 
+    read_list = list(csv.reader(f)) 
+    
+
+#---DATA DIMENSIONS
+for var_l in read_list: 
+    cname = var_l[0] 
+    year = float(var_l[1]) #1800, 1850, 1900, 1950, 2000
+    x = float(var_l[2]) 
+    y = float(var_l[3]) 
+    z = float(var_l[4]) 
+    
+    
+#---CREATE NAMED BASE
+    if year == 1800.0:
+        cylinder = bpy.ops.mesh.primitive_cylinder_add(enter_editmode=False, align='WORLD', location=(1, 1, 1), scale=(1, 1, 1)) 
+        for cylinder in bpy.context.selected_objects: 
+            cylinder.name = cname
+
+#---LOOP THE YEARS, SHOW THE VALUES
+    else :   
+        my_cylinder = bpy.data.objects[cname]
+        test = cname == my_cylinder.name    
+
+        if test: 
+            for iteration, item in enumerate(var_l[1]):
+                cylinder.location[0] = x 
+                cylinder.location[1] = y
+                cylinder.location[2] = z
+                cylinder.scale = (0.5, 0.5, z)
+                ita = iteration*10
+                cylinder.keyframe_insert(data_path = "location", frame = scn.frame_start + ita) 
+                cylinder.keyframe_insert(data_path = "scale", frame = scn.frame_start + ita )
+                scn.frame_end = ita
+                
+                
